@@ -2,6 +2,7 @@
 pub enum Context {
     Surface,
     Digits,
+    String,
 }
 
 #[derive(Debug)]
@@ -9,6 +10,7 @@ pub enum Context {
 pub enum Token {
     EOL,
     Integer(String),
+    String(String),
     Operator(OpCode),
     OpenParen,
     CloseParen,
@@ -96,6 +98,7 @@ impl Lexer {
                         '/' => final_token = Some(Token::Operator(OpCode::Divide)),
                         '(' => final_token = Some(Token::OpenParen),
                         ')' => final_token = Some(Token::CloseParen),
+                        '"' => context.push(Context::String),
                         ' ' => {},
                         _ => println!("Invalid char: ({}, {:?})", self.position, c),
                     }
@@ -109,6 +112,12 @@ impl Lexer {
                         jump_next_char = false;
                         final_token = Some(Token::Integer(queue.clone().into_iter().collect()));
                     }
+                }
+
+                Some(Context::String) => match c {
+                    Some('"') => final_token = Some(Token::String(queue.clone().into_iter().collect())),
+                    Some(x) => queue.push(*x),
+                    None => panic!("EOF before end of string"),
                 }
 
                 None => println!("The context stack is empty (how?)"),
