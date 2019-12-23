@@ -2,7 +2,7 @@
 
 use std::io;
 use std::io::Write;
-use crate::parser;
+use crate::lexer;
 
 const PROMPT: &str = "repl> ";
 
@@ -15,10 +15,10 @@ pub fn start() {
         // Get the input
         let input = get_input();
 
-        // Print back what was typed, but in debug mode.
-        // This was supposed to be where the input is processed into tokens, but it is not done yet.
-        // println!("{:?}", input);
-        parser::parse_string(&input);
+        // Prints back the input
+        let mut lexer_ = lexer::Lexer::with_content(&input);
+        let tokens = lexer_.get_all_next_tokens();
+        println!("{:?}", tokens);
 
     }
 }

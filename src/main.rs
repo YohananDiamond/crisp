@@ -1,6 +1,6 @@
 // Set up some modules
 mod repl;
-mod parser;
+mod lexer;
 
 /**
  * The main function of the thing.
