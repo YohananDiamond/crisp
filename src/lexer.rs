@@ -7,6 +7,7 @@ pub enum Context {
 
 #[derive(Debug)]
 #[derive(PartialEq)]
+#[derive(Clone)]
 pub enum Token {
     EOL,
     Integer(String),
@@ -18,6 +19,7 @@ pub enum Token {
 
 #[derive(Debug)]
 #[derive(PartialEq)]
+#[derive(Clone)]
 pub enum OpCode {
     Add,
     Subtract,
