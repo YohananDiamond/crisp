@@ -1,7 +1,5 @@
-mod repl;
-mod lexer;
+mod lib;
 
 fn main() {
-    // For now, fire up the repo.
-    repl::start();
+    lib::repl::init();
 }
