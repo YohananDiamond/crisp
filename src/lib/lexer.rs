@@ -142,20 +142,3 @@ impl Lexer {
         Ok(tokens)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn quick_token_parse(contents: String) -> Result<Vec<Token>, LexerError> {
-        let mut lex = Lexer::from(contents);
-        lex.get_tokens()
-    }
-
-    #[test]
-    fn simple_assert() {
-        assert_eq!(
-            quick_token_parse("(println \"Hello, {}\" \"World!\")".into()).unwrap(),
-            vec![Token::ParenLeft, Token::Symbol("println".into()), Token::String("Hello, {}".into()), Token::String("World!".into()), Token::ParenRight]);
-    }
-}
