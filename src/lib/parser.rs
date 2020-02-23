@@ -13,7 +13,6 @@ pub enum Expression {
 pub enum ParserError {
     UnmatchedParenLeft,
     UnmatchedParenRight,
-    EmptyQueuePush,
 }
 
 pub fn tokens_to_expression(tokens: &Vec<Token>) -> Result<Vec<Expression>, ParserError> {
