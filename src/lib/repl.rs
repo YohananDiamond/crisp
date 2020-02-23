@@ -19,7 +19,7 @@ pub fn init() {
         // Prints back the input
         let mut lex = Lexer::from(input);
         let tokens = lex.get_tokens();
-        print_tokens(&tokens);
+        print_tokenized(&tokens);
     }
 }
 
@@ -27,9 +27,13 @@ pub fn init() {
  * (Incomplete)
  * Reads tokens from a vector and prints them in a "pretty" way.
  */
-pub fn print_tokens(tokens: &Result<Vec<Token>, LexerError>) {
-    for token in tokens {
-        println!("{:?}", token);
+pub fn print_tokenized(tokens: &Result<Vec<Token>, LexerError>) {
+    if let Ok(x) = tokens {
+        for token in x {
+            println!("* {:?}", token);
+        }
+    } else if let Err(x) = tokens {
+        println!("Error: {:?}", x);
     }
 }
 

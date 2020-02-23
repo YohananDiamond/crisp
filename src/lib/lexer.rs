@@ -3,6 +3,7 @@ enum Context {
     Default,
     Symbol,
     Digits,
+    FloatDigits,
     String,
 }
 
@@ -13,6 +14,7 @@ pub enum Token {
     ParenRight,
     Symbol(String),
     Integer(String),
+    Float(String),
     String(String),
 }
 
@@ -21,6 +23,7 @@ pub enum LexerError {
     UnimplementedToken,
     UnexpectedEOF,
     EmptyContextStack,
+    InvalidCharacter(usize, char),
 }
 
 /**
@@ -76,12 +79,30 @@ impl Lexer {
                     
                     Context::Digits => match current_char {
                         Some(c) if c.is_digit(10) => queue.push(c.clone()),
-                        _ => {
+                        Some('.') => {
+                            queue.push('.');
+                            context_stack.pop();
+                            context_stack.push(Context::FloatDigits);
+
+                        },
+                        Some(' ') | Some(')') | None => {
                             context_stack.pop();
                             tokens.push(Token::Integer(queue.clone().into_iter().collect()));
                             queue.clear();
                             next_char = false;
                         },
+                        Some(c) => return Err(LexerError::InvalidCharacter(self.pos, c.clone())),
+                    },
+                    
+                    Context::FloatDigits => match current_char {
+                        Some(c) if c.is_digit(10) => queue.push(c.clone()),
+                        Some(' ') | Some(')') | None => {
+                            context_stack.pop();
+                            tokens.push(Token::Float(queue.clone().into_iter().collect()));
+                            queue.clear();
+                            next_char = false;
+                        },
+                        Some(c) => return Err(LexerError::InvalidCharacter(self.pos, c.clone())),
                     },
 
                     Context::String => match current_char {
