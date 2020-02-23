@@ -1,5 +1,7 @@
 use crate::lib::lexer::{Token};
 
+pub type ExpressionTree = Result<Vec<Expression>, ParserError>;
+
 #[derive(Debug)]
 pub enum Expression {
     Symbol(String),
@@ -15,7 +17,7 @@ pub enum ParserError {
     UnmatchedParenRight,
 }
 
-pub fn tokens_to_expression(tokens: &Vec<Token>) -> Result<Vec<Expression>, ParserError> {
+pub fn tokens_to_expression(tokens: &Vec<Token>) -> ExpressionTree {
     let mut position: usize = 0;
     let mut queue_stack: Vec<Vec<Expression>> = Vec::new(); // If empty, the parser is on the "root"; if else, then it is on a list
     let mut expressions: Vec<Expression> = Vec::new();

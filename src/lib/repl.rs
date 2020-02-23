@@ -4,8 +4,8 @@
 
 use std::io::{self, Write};
 use crate::lib::{
-    lexer::{Token, Lexer, LexerError},
-    parser::{tokens_to_expression, Expression},
+    lexer::Lexer,
+    parser::{tokens_to_expression, ExpressionTree},
 };
 
 const PROMPT: &str = "repl> ";
@@ -22,25 +22,19 @@ pub fn init() {
         // Prints back the input
         let mut lex = Lexer::from(input);
         let tokens = lex.get_tokens();
-        // print_tokenized(&tokens);
         match tokens {
-            Ok(t) => println!("{:?}", tokens_to_expression(&t)),
-            Err(e) => println!("Error: {:?}", e),
+            Ok(tok) => print_expression_tree(&tokens_to_expression(&tok)),
+            Err(e) => println!("Lexer error: {:?}", e),
         }
     }
 }
 
-/**
- * (Incomplete)
- * Reads tokens from a vector and prints them in a "pretty" way.
- */
-pub fn print_tokenized(tokens: &Result<Vec<Token>, LexerError>) {
-    if let Ok(x) = tokens {
-        for token in x {
-            println!("* {:?}", token);
-        }
-    } else if let Err(x) = tokens {
-        println!("Error: {:?}", x);
+fn print_expression_tree(tree: &ExpressionTree) {
+    match tree {
+        Ok(t) => for item in t {
+            println!("* {:?}", item);
+        },
+        Err(e) => println!("Parser error: {:?}", e),
     }
 }
 
