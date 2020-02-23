@@ -3,7 +3,10 @@
 /// the results to the user.
 
 use std::io::{self, Write};
-use crate::lib::lexer::{Token, Lexer, LexerError};
+use crate::lib::{
+    lexer::{Token, Lexer, LexerError},
+    parser::{tokens_to_expression, Expression},
+};
 
 const PROMPT: &str = "repl> ";
 
@@ -19,7 +22,11 @@ pub fn init() {
         // Prints back the input
         let mut lex = Lexer::from(input);
         let tokens = lex.get_tokens();
-        print_tokenized(&tokens);
+        // print_tokenized(&tokens);
+        match tokens {
+            Ok(t) => println!("{:?}", tokens_to_expression(&t)),
+            Err(e) => println!("Error: {:?}", e),
+        }
     }
 }
 
