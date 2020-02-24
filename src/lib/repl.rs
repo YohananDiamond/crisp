@@ -5,10 +5,11 @@
 use std::io::{self, Write};
 use crate::lib::{
     lexer::Lexer,
-    parser::{tokens_to_expression, ExpressionTree},
+    parser::{tokens_to_expression, ExpressionTree, Expression},
 };
 
 const PROMPT: &str = "repl> ";
+const INDENT_SIZE: usize = 2;
 
 /**
  * Initializes the REPL and processes the user the user input until it
@@ -32,9 +33,21 @@ pub fn init() {
 fn print_expression_tree(tree: &ExpressionTree) {
     match tree {
         Ok(t) => for item in t {
-            println!("* {:?}", item);
+            print_expression(item, 0);
         },
         Err(e) => println!("Parser error: {:?}", e),
+    }
+}
+
+fn print_expression(e: &Expression, indent: usize) {
+    match e {
+        Expression::List(l) => {
+            println!("{}* List:", " ".repeat(INDENT_SIZE * indent));
+            for expression in l {
+                print_expression(expression, indent + 1);
+            }
+        },
+        _ => println!("{}* {:?}", " ".repeat(INDENT_SIZE * indent), e),
     }
 }
 
