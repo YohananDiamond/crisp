@@ -1,6 +1,6 @@
-# Unnamed Lisp Dialect
+# `lisp.rs` -- Unnamed Lisp Dialect
 
-This is an unnamed lisp dialect I'm developing in rust to learn how to do parsing and programming language development.\
-It's based off an unrelated language parser I developed but gave up (for now, at least).
+This is an unnamed lisp dialect I'm developing in Rust to learn how to
+do parsing and programming language development.
 
-The specs are [here](SPECS.md).
+It's based off another bad lexer I made but gave up (for now, at least).
