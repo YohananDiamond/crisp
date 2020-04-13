@@ -5,7 +5,7 @@
 use std::io::{self, Write};
 use crate::lib::{
     lexer::Lexer,
-    parser::{tokens_to_expression, ExpressionTree, Expression},
+    parser::{parse_tokens, ParserResult, Expression},
 };
 
 const PROMPT: &str = "repl> ";
@@ -21,16 +21,16 @@ pub fn init() {
         let input = get_input();
 
         // Prints back the input
-        let mut lex = Lexer::from(input);
+        let mut lex = Lexer::from(&input);
         let tokens = lex.get_tokens();
         match tokens {
-            Ok(tok) => print_expression_tree(&tokens_to_expression(&tok)),
+            Ok(tok) => print_expression_tree(&parse_tokens(&tok)),
             Err(e) => println!("Lexer error: {:?}", e),
         }
     }
 }
 
-fn print_expression_tree(tree: &ExpressionTree) {
+fn print_expression_tree(tree: &ParserResult) {
     match tree {
         Ok(t) => for item in t {
             print_expression(item, 0);
@@ -42,7 +42,7 @@ fn print_expression_tree(tree: &ExpressionTree) {
 fn print_expression(e: &Expression, indent: usize) {
     match e {
         Expression::List(l) => {
-            println!("{}* List:", " ".repeat(INDENT_SIZE * indent));
+            println!("{}* List{}", " ".repeat(INDENT_SIZE * indent), if l.len() == 0 { " [empty]" } else { ":" });
             for expression in l {
                 print_expression(expression, indent + 1);
             }

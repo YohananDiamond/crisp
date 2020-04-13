@@ -1,11 +1,12 @@
-use crate::lib::lexer::{Token};
+use crate::lib::lexer::Token;
 
-pub type ExpressionTree = Result<Vec<Expression>, ParserError>;
+pub type ParserResult = Result<Vec<Expression>, ParserError>;
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Expression {
     Symbol(String),
-    String(String),
+    Str(String),
     Int(i64),
     Float(f64),
     List(Vec<Expression>),
@@ -17,7 +18,7 @@ pub enum ParserError {
     UnmatchedParenRight,
 }
 
-pub fn tokens_to_expression(tokens: &Vec<Token>) -> ExpressionTree {
+pub fn parse_tokens(tokens: &Vec<Token>) -> Result<Vec<Expression>, ParserError> {
     let mut position: usize = 0;
     let mut queue_stack: Vec<Vec<Expression>> = Vec::new(); // If empty, the parser is on the "root"; if else, then it is on a list
     let mut expressions: Vec<Expression> = Vec::new();
@@ -40,7 +41,7 @@ pub fn tokens_to_expression(tokens: &Vec<Token>) -> ExpressionTree {
                     Some(q) => match other_token {
                         Token::ParenLeft | Token::ParenRight => (), // Already covered before
                         Token::Symbol(s) => q.push(Expression::Symbol(s.to_string())),
-                        Token::String(s) => q.push(Expression::String(s.to_string())),
+                        Token::Str(s) => q.push(Expression::Str(s.to_string())),
                         // Calls to .unwrap() here are safe because the contents of these tokens
                         // were already analyzed in the lexer.
                         Token::Integer(i) => q.push(Expression::Int(i.parse::<i64>().unwrap())),
@@ -49,7 +50,7 @@ pub fn tokens_to_expression(tokens: &Vec<Token>) -> ExpressionTree {
                     None => match other_token {
                         Token::ParenLeft | Token::ParenRight => (), // Already covered before
                         Token::Symbol(s) => expressions.push(Expression::Symbol(s.to_string())),
-                        Token::String(s) => expressions.push(Expression::String(s.to_string())),
+                        Token::Str(s) => expressions.push(Expression::Str(s.to_string())),
                         // Calls to .unwrap() here are safe because the contents of these tokens
                         // were already analyzed in the lexer.
                         Token::Integer(i) => expressions.push(Expression::Int(i.parse::<i64>().unwrap())),
@@ -58,7 +59,7 @@ pub fn tokens_to_expression(tokens: &Vec<Token>) -> ExpressionTree {
                 }
             }
         }
-    
+
         if next_char {
             if let None = current_token {
                 if queue_stack.len() != 0 {

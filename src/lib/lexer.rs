@@ -1,6 +1,6 @@
 #[derive(Debug)]
 enum Context {
-    Default,
+    Base,
     Symbol,
     Digits,
     FloatDigits,
@@ -15,7 +15,7 @@ pub enum Token {
     Symbol(String),
     Integer(String),
     Float(String),
-    String(String),
+    Str(String),
 }
 
 #[derive(Debug)]
@@ -26,17 +26,14 @@ pub enum LexerError {
     InvalidCharacter(usize, char),
 }
 
-/**
- * Contains information to help on the lexical analysis.
- */
 #[derive(Debug)]
 pub struct Lexer {
     pos: usize,
     contents: Vec<char>,
 }
 
-impl From<String> for Lexer {
-    fn from(contents: String) -> Lexer {
+impl From<&String> for Lexer {
+    fn from(contents: &String) -> Lexer {
         Lexer {
             pos: 0,
             contents: contents.chars().collect(),
@@ -48,7 +45,7 @@ impl Lexer {
     pub fn get_tokens(&mut self) -> Result<Vec<Token>, LexerError> {
         let mut tokens = Vec::<Token>::new();
         let mut queue = Vec::<char>::new();
-        let mut context_stack = vec![Context::Default];
+        let mut context_stack = vec![Context::Base];
 
         loop {
             let mut next_char = true;
@@ -56,7 +53,7 @@ impl Lexer {
 
             if let Some(context) = context_stack.last().clone() {
                 match context {
-                    Context::Default => match current_char {
+                    Context::Base => match current_char {
                         Some(c) => match c {
                             x if x.is_digit(10) => {
                                 context_stack.push(Context::Digits);
@@ -76,7 +73,7 @@ impl Lexer {
                         },
                         None => (),
                     },
-                    
+
                     Context::Digits => match current_char {
                         Some(c) if c.is_digit(10) => queue.push(c.clone()),
                         Some('.') => {
@@ -93,7 +90,7 @@ impl Lexer {
                         },
                         Some(c) => return Err(LexerError::InvalidCharacter(self.pos, c.clone())),
                     },
-                    
+
                     Context::FloatDigits => match current_char {
                         Some(c) if c.is_digit(10) => queue.push(c.clone()),
                         Some(' ') | Some(')') | None => {
@@ -108,7 +105,7 @@ impl Lexer {
                     Context::String => match current_char {
                         Some('"') => {
                             context_stack.pop();
-                            tokens.push(Token::String(queue.clone().into_iter().collect()));
+                            tokens.push(Token::Str(queue.clone().into_iter().collect()));
                             queue.clear();
                         },
                         // TODO: escape sequences;
