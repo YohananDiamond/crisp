@@ -8,7 +8,6 @@ use crate::lib::{
     parser::{parse_tokens, ParserResult, Expression},
 };
 
-const PROMPT: &str = "repl> ";
 const INDENT_SIZE: usize = 2;
 
 /**
@@ -17,11 +16,8 @@ const INDENT_SIZE: usize = 2;
  */
 pub fn init() {
     loop {
-        // Get the input
-        let input = get_input();
-
-        // Prints back the input
-        let mut lex = Lexer::from(&input);
+        let input = read_line("crisp> ");
+        let mut lex = Lexer::from(input.as_ref());
         let tokens = lex.get_tokens();
         match tokens {
             Ok(tok) => print_expression_tree(&parse_tokens(&tok)),
@@ -52,14 +48,13 @@ fn print_expression(e: &Expression, indent: usize) {
 }
 
 /**
- * Gets text input from the user.
- * Leading whitespace characters (including \n) are removed.
+ * Gets text input from the user and trims it.
  */
-fn get_input() -> String {
+fn read_line(prompt: &str) -> String {
     let mut input = String::new();
 
     // Show the prompt
-    print!("{}", PROMPT);
+    print!("{}", prompt);
     io::stdout().flush().unwrap();
 
     // Actually read input
@@ -67,5 +62,5 @@ fn get_input() -> String {
         .expect("Error reading input");
 
     // Return the trimmed String
-    input.trim().to_string()
+    input.trim().into()
 }

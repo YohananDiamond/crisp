@@ -5,9 +5,10 @@ use std::fmt;
 type Scope<'a> = HashMap<&'a str, Data>;
 type EvalResult = Result<Data, String>; // A method for raising exceptions. I should make something better later.
 
-/** Internal representation of the data.
- * Not sure if it was needed, but I made it mostly because of Nil and Function, since they are also
- * data. */
+/**
+ * Internal representation of the data.
+ * Not sure if it was needed differently from Data, but I made it mostly because of Nil and
+ * Function, since they are also data. */
 #[derive(Clone)]
 pub enum Data {
     Symbol(String),
@@ -86,14 +87,15 @@ impl<'a> Interpreter<'a> {
         standard
     }
 
-    pub fn start(&mut self) {
+    pub fn start(&mut self) -> i32 {
         for data in self.program.clone() {
             if let Err(e) = self.eval(Ok(data)) {
                 /* Terrible debug here, huh? */
                 println!("An error ocurred: {}", e);
-                break;
+                return 1;
             }
         }
+        0
     }
 
     pub fn eval(&mut self, data: EvalResult) -> EvalResult {

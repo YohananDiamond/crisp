@@ -32,8 +32,8 @@ pub struct Lexer {
     contents: Vec<char>,
 }
 
-impl From<&String> for Lexer {
-    fn from(contents: &String) -> Lexer {
+impl<'a> From<&'a str> for Lexer {
+    fn from(contents: &'a str) -> Lexer {
         Lexer {
             pos: 0,
             contents: contents.chars().collect(),

@@ -6,19 +6,30 @@ use lib::{
 };
 
 fn main() {
-    let code: String = String::from("(hello-world)");
-    let tokens = Lexer::from(&code).get_tokens();
+    let code = r"(hello-world) (hello-world) (hello-world) (+ 1 2)";
+    let exit_code = init_interpreter(code);
+    std::process::exit(exit_code);
+}
+
+fn init_interpreter(code: &str) -> i32 {
+    println!("Code: {}", code);
+
+    let tokens = Lexer::from(code).get_tokens();
     match tokens {
-        Ok(tok) => {
-            match parse_tokens(&tok) {
-                Ok(expr) => {
-                    let data: Vec<Data> = expr.iter().map(|x| Data::from(x.clone())).collect();
-                    let mut interpreter = Interpreter::new(data);
-                    interpreter.start();
-                },
-                Err(e) => println!("Could not parse input; error: {:?}", e),
-            }
+        Ok(t) => match parse_tokens(&t) {
+            Ok(expr) => {
+                let data: Vec<Data> = expr.iter().map(|x| Data::from(x.clone())).collect();
+                let mut interpreter = Interpreter::new(data);
+                interpreter.start() // TODO: choose between run data and/or REPL
+            },
+            Err(e) => {
+                eprintln!("Could not parse input: {:?}", e); // TODO: print a better stack trace and etc.
+                1
+            },
         },
-        Err(e) => println!("Could not tokenize input; error: {:?}", e),
+        Err(e) => {
+            eprintln!("Could not tokenize input: {:?}", e);
+            1
+        },
     }
 }
