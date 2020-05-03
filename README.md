@@ -1,6 +1,3 @@
-# `lisp.rs` -- Unnamed Lisp Dialect
+# `crisp`
 
-This is an unnamed lisp dialect I'm developing in Rust to learn how to
-do parsing and programming language development.
-
-It's based off another bad lexer I made but gave up (for now, at least).
+This is a random lisp implementation I'm working on to learn how lisp interpreters work.
