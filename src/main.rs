@@ -1,35 +1,29 @@
-mod lib;
-use lib::{
-    parser::parse_tokens,
-    lexer::Lexer,
-    interpreter::{Interpreter, Data},
-};
+extern crate pest;
+#[macro_use]
+extern crate pest_derive;
+
+pub mod lib;
 
 fn main() {
-    let code = r"(hello-world) (hello-world) (hello-world) (+ 1 2)";
+    let code = r#"(println "Hello, World!") (println "This should be on another line.") (println (+ 1 2))"#;
     let exit_code = init_interpreter(code);
     std::process::exit(exit_code);
 }
 
 fn init_interpreter(code: &str) -> i32 {
+    use lib::data::Data;
+    use lib::interpreter::Interpreter;
     println!("Code: {}", code);
 
-    let tokens = Lexer::from(code).get_tokens();
-    match tokens {
-        Ok(t) => match parse_tokens(&t) {
-            Ok(expr) => {
-                let data: Vec<Data> = expr.iter().map(|x| Data::from(x.clone())).collect();
-                let mut interpreter = Interpreter::new(data);
-                interpreter.start() // TODO: choose between run data and/or REPL
-            },
-            Err(e) => {
-                eprintln!("Could not parse input: {:?}", e); // TODO: print a better stack trace and etc.
-                1
-            },
-        },
+    match lib::parser::parse_program(code) {
+        Ok(prog) => {
+            let mut interpreter =
+                Interpreter::new(prog.iter().map(|pre| Data::from(pre.clone())).collect());
+            interpreter.start()
+        }
         Err(e) => {
-            eprintln!("Could not tokenize input: {:?}", e);
-            1
-        },
+            println!("Parsing error:\n{}", e);
+            2
+        }
     }
 }

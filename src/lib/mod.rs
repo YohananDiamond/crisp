@@ -1,4 +1,4 @@
-pub mod repl;
-pub mod lexer;
-pub mod parser;
+pub mod data;
 pub mod interpreter;
+pub mod parser;
+// pub mod repl;

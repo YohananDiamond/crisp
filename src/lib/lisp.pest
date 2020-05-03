@@ -1,0 +1,23 @@
+// vim: ft=rust nofoldenable
+
+WHITESPACE = _{ " " }
+program = { SOI ~ (expr)+ ~ EOI }
+
+expr = { list | int | float | string | symbol }
+
+list = { "(" ~ (expr)* ~ ")" }
+int = @{ ("-")? ~ (ASCII_DIGIT)+ }
+float = @{ ("-")? ~ ((ASCII_DIGIT)* ~ "." ~ (ASCII_DIGIT)+ | (ASCII_DIGIT)+ ~ "." ~ (ASCII_DIGIT)*) }
+string = ${ "\"" ~ string_inner ~ "\"" }
+symbol = @{ (symbol_allowed) ~ (symbol_allowed | ASCII_DIGIT)* }
+
+string_inner = { char* }
+char = { char_normal | char_escape_code }
+// char = { char_normal | char_escape_code | char_unicode_hex }
+
+symbol_allowed = @{ !("\"" | "\\" | "'" | " " | "(" | ")") ~ ANY }
+char_normal = @{ !("\"" | "\\") ~ ANY }
+char_escape_code = @{ "\\" ~ ("\"" | "\\" | "n" | "t") } // TODO: handle \b, \v, \a, \f, \r
+// char_unicode_hex = { "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4}) } // TODO: find a way to implement the conversion for this
+
+// TODO: quoted
